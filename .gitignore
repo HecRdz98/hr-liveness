@@ -1,0 +1,13 @@
+PLAN.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+face_landmarker.task
+
+# Composer
+vendor/
+
+# Logs y fotos generadas en runtime
+*.log
