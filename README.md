@@ -186,7 +186,7 @@ return [
 
 - PHP 8.1+ con `proc_open` habilitado
 - Python 3.8+ con `mediapipe`, `opencv-python`, `numpy`
-- Laravel 10+ o 11+
+- Laravel 10, 11 o 12+
 - **HTTPS en producción** (requerido por los navegadores para acceder a la cámara en móviles)
 
 ---
