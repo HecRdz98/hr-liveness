@@ -148,11 +148,11 @@ Route::post('/accion', [Controller::class, 'accion'])
 
 ---
 
-## Integración con Form Builder
+## Integración en formularios personalizados
 
 ```php
-// En un ServiceProvider
-FormBuilder::registerFieldType('liveness', [
+// En un ServiceProvider — registro como tipo de campo personalizado
+CustomFormFields::register('liveness', [
     'label'     => 'Verificación Facial (Liveness)',
     'blade'     => 'liveness::components.field',
     'validator' => fn() => ['required', Rule::liveness()],
