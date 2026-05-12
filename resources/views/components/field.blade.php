@@ -16,13 +16,6 @@
        id="{{ $name }}_photo"
        value="{{ old($name . '_photo') }}">
 
-{{-- Botón trigger (solo en modo modal) --}}
-@if ($renderMode === 'modal')
-<button type="button" id="{{ $name }}-liveness-trigger">
-    {{ $triggerLabel }}
-</button>
-@endif
-
 {{-- Contenedor donde se monta el widget --}}
 <div id="{{ $name }}-liveness-mount"></div>
 
@@ -51,7 +44,8 @@
         endpoint:           '{{ route('liveness.verify') }}',
         photosEndpoint:     '{{ route('liveness.photos') }}',
         renderMode:         '{{ $renderMode }}',
-        triggerSelector:    @if ($renderMode === 'modal') '#{{ $name }}-liveness-trigger' @else null @endif,
+        triggerLabel:       @json($triggerLabel),
+        triggerClass:       @json($triggerClass),
         showSnapshot:       {{ $showSnapshot ? 'true' : 'false' }},
         showGallery:        {{ $showGallery  ? 'true' : 'false' }},
         tokenInputSelector: '#{{ $name }}',
