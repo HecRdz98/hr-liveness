@@ -19,28 +19,33 @@
 {{-- Contenedor donde se monta el widget --}}
 <div id="{{ $name }}-liveness-mount"></div>
 
-<script>
-(function () {
-    var theme = @json(array_filter(array_merge(
+@php
+    $_lvTheme = array_filter(array_merge(
         ['brandName' => $brandName ?? config('liveness.brand_name', config('app.name'))],
         $brandSubtitle ? ['brandSubtitle' => $brandSubtitle] : [],
         $primaryColor  ? ['colorPrimary'  => $primaryColor]  : [],
         $accentColor   ? ['colorAccent'   => $accentColor]   : [],
         $theme
-    )));
+    ));
+    $_lvChallenges = $challenges ?: config('liveness.challenges');
+@endphp
+
+<script>
+(function () {
+    var theme = @json($_lvTheme);
 
     new LivenessWidget('#{{ $name }}-liveness-mount', {
-        endpoint:          '{{ route('liveness.verify') }}',
-        photosEndpoint:    '{{ route('liveness.photos') }}',
-        renderMode:        'inline',
+        endpoint:           '{{ route('liveness.verify') }}',
+        photosEndpoint:     '{{ route('liveness.photos') }}',
+        renderMode:         'inline',
         tokenInputSelector: '#{{ $name }}',
         photoInputSelector: '#{{ $name }}_photo',
-        photoMaxWidth:     {{ $photoMaxWidth ?? 'null' }},
-        photoMaxHeight:    {{ $photoMaxHeight ?? 'null' }},
-        photoQuality:      {{ $photoQuality }},
-        challenges:        @json($challenges ?: config('liveness.challenges')),
-        theme:             theme,
-        texts:             @json($texts),
+        photoMaxWidth:      {{ $photoMaxWidth ?? 'null' }},
+        photoMaxHeight:     {{ $photoMaxHeight ?? 'null' }},
+        photoQuality:       {{ $photoQuality }},
+        challenges:         @json($_lvChallenges),
+        theme:              theme,
+        texts:              @json($texts),
         onSuccess: function (result) {
             var input = document.getElementById('{{ $name }}');
             if (input) input.dispatchEvent(new Event('change', { bubbles: true }));
