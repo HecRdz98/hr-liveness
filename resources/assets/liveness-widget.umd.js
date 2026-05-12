@@ -320,8 +320,8 @@ ${e} .lv-modal-backdrop .lv-video-mini-wrapper { aspect-ratio: 3/4; }
           <h3 data-lv="camAlertTitle">${this._esc(t.camErrTitle)}</h3>
           <p data-lv="camAlertDesc">${this._esc(t.camErrDesc)}</p>
         </div>
-        <button class="lv-btn lv-btn-primary" data-lv="btnStart">${this._esc(t.btnStart)}</button>
-        <button class="lv-btn lv-btn-primary" data-lv="btnContinue" style="display:none">${this._esc(t.btnContinue)}</button>
+        <button type="button" class="lv-btn lv-btn-primary" data-lv="btnStart">${this._esc(t.btnStart)}</button>
+        <button type="button" class="lv-btn lv-btn-primary" data-lv="btnContinue" style="display:none">${this._esc(t.btnContinue)}</button>
       </div>
     </div>
 
@@ -349,7 +349,7 @@ ${e} .lv-modal-backdrop .lv-video-mini-wrapper { aspect-ratio: 3/4; }
           <div class="lv-progress-fill" data-lv="progFill"></div>
         </div>
       </div>
-      <button class="lv-btn-ghost-sm" data-lv="btnCancelar" style="display:none">${this._esc(t.btnCancel)}</button>
+      <button type="button" class="lv-btn-ghost-sm" data-lv="btnCancelar" style="display:none">${this._esc(t.btnCancel)}</button>
       <div class="lv-spinner-box" data-lv="spinnerBox">
         <div class="lv-spinner"></div>
         <span class="lv-spinner-text">${this._esc(t.spinnerText)}</span>
@@ -397,9 +397,9 @@ ${e} .lv-modal-backdrop .lv-video-mini-wrapper { aspect-ratio: 3/4; }
                 </div>
               </div>
               ${t.detail?`<div class="lv-result-detail">${this._esc(t.detail)}</div>`:""}
-              <button class="lv-btn lv-btn-success" data-lv-action="reiniciar">${this._esc(e.btnNewVerification)}</button>
+              <button type="button" class="lv-btn lv-btn-success" data-lv-action="reiniciar">${this._esc(e.btnNewVerification)}</button>
               <div class="lv-gallery-section" data-lv="gallerySection" style="display:none">
-                <button class="lv-gallery-toggle" data-lv-action="toggleGallery">
+                <button type="button" class="lv-gallery-toggle" data-lv-action="toggleGallery">
                   <span data-lv="galleryArrow">\u25B8</span> ${this._esc(e.previousCaptures||"Capturas anteriores")}
                 </button>
                 <div data-lv="photoGrid" style="display:none"></div>
@@ -414,13 +414,13 @@ ${e} .lv-modal-backdrop .lv-video-mini-wrapper { aspect-ratio: 3/4; }
               <div class="lv-result-title failure">${this._esc(e.resultFailure)}</div>
               <p class="lv-result-reason">${this._esc(t.reason||e.resultFailureDefault)}</p>
               ${t.detail?`<div class="lv-result-detail">${this._esc(t.detail)}</div>`:""}
-              <button class="lv-btn lv-btn-primary" data-lv-action="reiniciar">${this._esc(e.btnRetry)}</button>
+              <button type="button" class="lv-btn lv-btn-primary" data-lv-action="reiniciar">${this._esc(e.btnRetry)}</button>
             `,typeof this.cfg.onFailure=="function"&&this.cfg.onFailure(t.reason,t);a.addEventListener("click",r=>{let s=r.target.closest("[data-lv-action]");s&&(s.dataset.lvAction==="reiniciar"&&this.reset(),s.dataset.lvAction==="toggleGallery"&&this._toggleGallery(a))})}_mostrarError(t){let e=this.cfg.texts,a=this._el.resultBox;a.innerHTML=`
           <div class="lv-error-card">
             <h3>${this._esc(e.errorTitle)}</h3>
             <p>${this._esc(t)}</p>
           </div>
-          <button class="lv-btn lv-btn-ghost" data-lv-action="reiniciar">${this._esc(e.btnRetryConnection)}</button>
+          <button type="button" class="lv-btn lv-btn-ghost" data-lv-action="reiniciar">${this._esc(e.btnRetryConnection)}</button>
         `,a.addEventListener("click",r=>{r.target.closest('[data-lv-action="reiniciar"]')&&this.reset()}),typeof this.cfg.onError=="function"&&this.cfg.onError(t)}_cancelarCaptura(){this._limpiarIntervalos(),this._frames=[];let t=this._el.video;this._stream&&(t.srcObject=this._stream,t.style.display="block",t.play().catch(()=>{})),this._el.progFill.style.width="0%",this._el.progTime.textContent=(this.cfg.captureDurationMs/1e3).toFixed(1)+"s",this._el.framesCounter.textContent="0 frames",this._el.challengeBox.style.display="block",this._el.progressBox.style.display="block",this._el.spinnerBox.style.display="none",this._irAPaso(1),typeof this.cfg.onCancel=="function"&&this.cfg.onCancel()}_resetUI(){let t=this._el.video;t.srcObject=null,t.style.display="none",this._el.placeholder.style.display="flex",this._el.overlay.style.display="none",this._el.scanLine.style.display="none",["cTL","cTR","cBL","cBR"].forEach(a=>this._el[a].style.display="none"),this._el.camAlert.style.display="none",this._el.s1Title.textContent=this.cfg.texts.step1Title,this._el.s1Desc.textContent=this.cfg.texts.step1Desc;let e=this._el.btnStart;e.disabled=!1,e.textContent=this.cfg.texts.btnStart,e.style.display="block",this._el.btnContinue.style.display="none",this._el.btnCancelar.style.display="none",this._frames=[],this._challenge=null}_escribirToken(t){if(this.cfg.tokenInputSelector){let e=document.querySelector(this.cfg.tokenInputSelector);e&&(e.value=t,e.dispatchEvent(new Event("change")))}if(this.cfg.tokenInputName){let e=this._container.closest("form");if(e){let a=e.querySelector(`[name="${this.cfg.tokenInputName}"]`);a||(a=document.createElement("input"),a.type="hidden",a.name=this.cfg.tokenInputName,e.appendChild(a)),a.value=t,a.dispatchEvent(new Event("change"))}}}_redimensionarSnapshot(t){let e=this.cfg.photoMaxWidth,a=this.cfg.photoMaxHeight,r=this.cfg.photoQuality??.82;return!e&&!a?t:new Promise(s=>{let o=new Image;o.onload=()=>{let l=o.naturalWidth,n=o.naturalHeight,c=e?e/l:1/0,d=a?a/n:1/0,p=Math.min(1,c,d);l=Math.round(l*p),n=Math.round(n*p);let v=document.createElement("canvas");v.width=l,v.height=n,v.getContext("2d").drawImage(o,0,0,l,n),s(v.toDataURL("image/jpeg",r))},o.onerror=()=>s(t),o.src=t})}_escribirFoto(t){if(this.cfg.photoInputSelector){let e=document.querySelector(this.cfg.photoInputSelector);e&&(e.value=t,e.dispatchEvent(new Event("change")))}if(this.cfg.photoInputName){let e=this._container.closest("form");if(e){let a=e.querySelector(`[name="${this.cfg.photoInputName}"]`);a||(a=document.createElement("input"),a.type="hidden",a.name=this.cfg.photoInputName,e.appendChild(a)),a.value=t,a.dispatchEvent(new Event("change"))}}}_cargarGaleria(t){let e=this.cfg.photosEndpoint||"get_photos.php";fetch(e).then(a=>a.json()).then(a=>{if(!a.photos||a.photos.length<2)return;let r=t.querySelector('[data-lv="gallerySection"]'),s=t.querySelector('[data-lv="photoGrid"]');!r||!s||(s.innerHTML=a.photos.map(o=>`<img src="${this._esc(o.url)}" class="lv-photo-thumb" alt="${this._esc(o.challenge)}" title="${this._esc(o.date)}">`).join(""),s.className="lv-photo-grid",r.style.display="block")}).catch(()=>{})}_toggleGallery(t){let e=t.querySelector('[data-lv="photoGrid"]'),a=t.querySelector('[data-lv="galleryArrow"]');if(!e)return;let r=e.style.display!=="none";e.style.display=r?"none":"block",a.textContent=r?"\u25B8":"\u25BE"}_limpiarIntervalos(){clearInterval(this._captureId),clearInterval(this._progressId)}_detenerCamara(){y(this._stream),this._stream=null}_esc(t){return typeof t!="string"?String(t??""):t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}_defaultLogo(){return`<svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="42" height="42" rx="11" fill="url(#lvGrad${this._id})"/>
             <circle cx="21" cy="15.5" r="5.5" stroke="white" stroke-width="1.6"/>
