@@ -16,15 +16,27 @@
        id="{{ $name }}_photo"
        value="{{ old($name . '_photo') }}">
 
+{{-- Botón trigger (solo en modo modal) --}}
+@if ($renderMode === 'modal')
+<button type="button" id="{{ $name }}-liveness-trigger">
+    {{ $triggerLabel }}
+</button>
+@endif
+
 {{-- Contenedor donde se monta el widget --}}
 <div id="{{ $name }}-liveness-mount"></div>
 
 @php
     $_lvTheme = array_filter(array_merge(
-        ['brandName' => $brandName ?? config('liveness.brand_name', config('app.name'))],
+        ['brandName'   => $brandName  ?? config('liveness.brand_name', config('app.name'))],
         $brandSubtitle ? ['brandSubtitle' => $brandSubtitle] : [],
         $primaryColor  ? ['colorPrimary'  => $primaryColor]  : [],
         $accentColor   ? ['colorAccent'   => $accentColor]   : [],
+        $bgColor       ? ['colorBg'       => $bgColor]       : [],
+        $surfaceColor  ? ['colorSurface'  => $surfaceColor]  : [],
+        $textColor     ? ['colorText'     => $textColor]     : [],
+        $successColor  ? ['colorSuccess'  => $successColor]  : [],
+        $dangerColor   ? ['colorDanger'   => $dangerColor]   : [],
         $theme
     ));
     $_lvChallenges = $challenges ?: config('liveness.challenges');
@@ -38,7 +50,10 @@
     new LivenessWidget('#{{ $name }}-liveness-mount', {
         endpoint:           '{{ route('liveness.verify') }}',
         photosEndpoint:     '{{ route('liveness.photos') }}',
-        renderMode:         'inline',
+        renderMode:         '{{ $renderMode }}',
+        triggerSelector:    @if ($renderMode === 'modal') '#{{ $name }}-liveness-trigger' @else null @endif,
+        showSnapshot:       {{ $showSnapshot ? 'true' : 'false' }},
+        showGallery:        {{ $showGallery  ? 'true' : 'false' }},
         tokenInputSelector: '#{{ $name }}',
         photoInputSelector: '#{{ $name }}_photo',
         photoMaxWidth:      {{ $photoMaxWidth ?? 'null' }},
