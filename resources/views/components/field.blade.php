@@ -30,6 +30,7 @@
     $_lvChallenges = $challenges ?: config('liveness.challenges');
 @endphp
 
+@push('scripts')
 <script>
 (function () {
     var theme = @json($_lvTheme);
@@ -53,3 +54,4 @@
     });
 })();
 </script>
+@endpush
