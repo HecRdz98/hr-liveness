@@ -1,6 +1,5 @@
 // HR Liveness Widget v1.0.0 — https://github.com/HecRdz98/hr-liveness
-var LivenessWidgetLib=(()=>{var h=Object.defineProperty;var k=Object.getOwnPropertyDescriptor;var S=Object.getOwnPropertyNames;var T=Object.prototype.hasOwnProperty;var C=(i,t)=>{for(var e in t)h(i,e,{get:t[e],enumerable:!0})},E=(i,t,e,a)=>{if(t&&typeof t=="object"||typeof t=="function")for(let r of S(t))!T.call(i,r)&&r!==e&&h(i,r,{get:()=>t[r],enumerable:!(a=k(t,r))||a.enumerable});return i};var I=i=>E(h({},"__esModule",{value:!0}),i);var A={};C(A,{LivenessWidget:()=>g});var u={colorPrimary:"#0066ff",colorPrimaryDark:"#0052cc",colorAccent:"#00d4ff",colorSuccess:"#00e5a0",colorSuccessDark:"#00b87c",colorDanger:"#ff4566",colorBg:"#080c18",colorSurface:"#0d1226",colorSurface2:"#131929",colorBorder:"rgba(0,212,255,0.15)",colorBorderSubtle:"rgba(255,255,255,0.05)",colorText:"#e8eaf6",colorTextMuted:"#8892b0",fontBody:"'Outfit', sans-serif",fontHeading:"'Space Grotesk', sans-serif",radiusCard:"20px",radiusInner:"12px",logoHtml:null,brandName:"SecureID",brandSubtitle:"Verificaci\xF3n de identidad"},f={step1Title:"Verifica tu identidad",step1Desc:"Activa la c\xE1mara y centra tu rostro dentro del \xF3valo. Aseg\xFArate de tener buena iluminaci\xF3n antes de continuar.",step1Ready:"Coloca tu rostro en el \xF3valo",step1ReadyDesc:"Cuando tu rostro est\xE9 bien centrado dentro del \xF3valo, presiona Continuar.",btnStart:"Iniciar verificaci\xF3n",btnStarting:"Conectando c\xE1mara...",btnContinue:"Continuar \u2192",btnRetry:"Intentar de nuevo",btnNewVerification:"Nueva verificaci\xF3n",btnCancel:"\u21A9 Cancelar y reintentar",labelStep1:"Posici\xF3n",labelStep2:"Verificaci\xF3n",labelStep3:"Resultado",step2Title:"Completa el desaf\xEDo",badgeLive:"En vivo",capturingFrames:"Capturando frames...",spinnerText:"Analizando con IA...",spinnerMessages:["Procesando frames capturados\u2026","Verificando movimiento facial\u2026","Comprobando autenticidad\u2026","Calculando m\xE9tricas biom\xE9tricas\u2026","Finalizando an\xE1lisis\u2026"],resultSuccess:"Identidad verificada",resultFailure:"Verificaci\xF3n fallida",resultSuccessDefault:"Verificaci\xF3n completada exitosamente.",resultFailureDefault:"No se pudo verificar la identidad.",snapshotLabel:"Captura registrada",confidenceLabel:"Confianza del an\xE1lisis",framesLabel:"Frames",verifiedLabel:"Verificado",errorTitle:"\u26A0\uFE0F Error de conexi\xF3n",btnRetryConnection:"Volver a intentar",httpsWarningTitle:"\u26A0\uFE0F Se requiere HTTPS en dispositivos m\xF3viles",httpsWarningDesc:"Est\xE1s accediendo por HTTP. Los navegadores m\xF3viles bloquean la c\xE1mara sin conexi\xF3n segura. Accede por https:// o desde localhost en una computadora.",camErrTitle:"\u{1F6AB} Acceso a c\xE1mara denegado",camErrDesc:"Debes permitir el acceso a la c\xE1mara. Ve a la configuraci\xF3n del navegador \u2192 Privacidad \u2192 C\xE1mara y habil\xEDtala para este sitio.",errPermission:{title:"\u{1F6AB} Permiso denegado",desc:"Debes permitir el acceso a la c\xE1mara. En iOS: Ajustes \u2192 Safari \u2192 C\xE1mara \u2192 Permitir. En Android: toca el \xEDcono de c\xE1mara en la barra de direcci\xF3n."},errNotFound:{title:"\u{1F4F7} C\xE1mara no encontrada",desc:"No se detect\xF3 ninguna c\xE1mara en este dispositivo."},errBusy:{title:"\u26A0\uFE0F C\xE1mara ocupada",desc:"La c\xE1mara est\xE1 siendo usada por otra app. Ci\xE9rrala y vuelve a intentarlo."},errConstrained:{title:"\u2699\uFE0F C\xE1mara no compatible",desc:"La c\xE1mara no soporta el modo requerido. Intenta con otro navegador."},errHTTPS:{title:"\u{1F512} Se requiere HTTPS",desc:"El acceso a la c\xE1mara requiere una conexi\xF3n segura (HTTPS). Contacta al administrador para configurar SSL."},errGeneric:{title:"\u{1F6AB} Error de c\xE1mara",desc:"No se pudo acceder a la c\xE1mara."},errNoAPI:{notSecure:"La c\xE1mara requiere HTTPS en dispositivos m\xF3viles. Accede al sitio con https:// o desde localhost.",generic:"Tu navegador no soporta acceso a c\xE1mara. Usa Chrome, Firefox o Safari actualizados."},challenges:{parpadea:{text:"Parpadea 2 veces",icon:"\u{1F441}\uFE0F",hint:"Cierra y abre los ojos lentamente"},derecha:{text:"Gira la cabeza a la derecha",icon:"\u27A1\uFE0F",hint:"Gira suavemente hacia tu derecha"},izquierda:{text:"Gira la cabeza a la izquierda",icon:"\u2B05\uFE0F",hint:"Gira suavemente hacia tu izquierda"},sonrie:{text:"Sonr\xEDe",icon:"\u{1F60A}",hint:"Muestra tu mejor sonrisa"}},previousCaptures:"\u25B8 Capturas anteriores"},x={endpoint:"verify_liveness.php",fetchTimeoutMs:3e4,captureIntervalMs:150,captureDurationMs:4e3,renderMode:"inline",triggerSelector:null,challenges:["parpadea","derecha","izquierda","sonrie"],tokenInputSelector:null,tokenInputName:"liveness_token",photoInputSelector:null,photoInputName:"liveness_photo",photoMaxWidth:640,photoMaxHeight:480,photoQuality:.82,csrfToken:null,photosEndpoint:null,theme:{},texts:{},triggerLabel:"Verificar identidad",triggerClass:null,showSnapshot:true,showGallery:true,onSuccess:null,onFailure:null,onCancel:null,onError:null};function b(i,t){let e=`[data-liveness-widget="${t}"]`;return`
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+var LivenessWidgetLib=(()=>{var h=Object.defineProperty;var k=Object.getOwnPropertyDescriptor;var S=Object.getOwnPropertyNames;var T=Object.prototype.hasOwnProperty;var C=(i,t)=>{for(var e in t)h(i,e,{get:t[e],enumerable:!0})},E=(i,t,e,a)=>{if(t&&typeof t=="object"||typeof t=="function")for(let r of S(t))!T.call(i,r)&&r!==e&&h(i,r,{get:()=>t[r],enumerable:!(a=k(t,r))||a.enumerable});return i};var I=i=>E(h({},"__esModule",{value:!0}),i);var A={};C(A,{LivenessWidget:()=>g});var u={colorPrimary:"#0d6efd",colorPrimaryDark:"#0b5ed7",colorAccent:"#0d6efd",colorSuccess:"#198754",colorSuccessDark:"#146c43",colorDanger:"#dc3545",colorBg:"#ffffff",colorSurface:"#ffffff",colorSurface2:"#f8f9fa",colorBorder:"#dee2e6",colorBorderSubtle:"#e9ecef",colorText:"#212529",colorTextMuted:"#6c757d",colorVideoBg:"#111827",fontBody:"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",fontHeading:"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",radiusCard:"12px",radiusInner:"8px",logoHtml:null,brandName:"SecureID",brandSubtitle:"Verificaci\xF3n de identidad"},f={step1Title:"Verifica tu identidad",step1Desc:"Activa la c\xE1mara y centra tu rostro dentro del \xF3valo. Aseg\xFArate de tener buena iluminaci\xF3n antes de continuar.",step1Ready:"Coloca tu rostro en el \xF3valo",step1ReadyDesc:"Cuando tu rostro est\xE9 bien centrado dentro del \xF3valo, presiona Continuar.",btnStart:"Iniciar verificaci\xF3n",btnStarting:"Conectando c\xE1mara...",btnContinue:"Continuar \u2192",btnRetry:"Intentar de nuevo",btnNewVerification:"Nueva verificaci\xF3n",btnCancel:"\u21A9 Cancelar y reintentar",labelStep1:"Posici\xF3n",labelStep2:"Verificaci\xF3n",labelStep3:"Resultado",step2Title:"Completa el desaf\xEDo",badgeLive:"En vivo",capturingFrames:"Capturando frames...",spinnerText:"Analizando con IA...",spinnerMessages:["Procesando frames capturados\u2026","Verificando movimiento facial\u2026","Comprobando autenticidad\u2026","Calculando m\xE9tricas biom\xE9tricas\u2026","Finalizando an\xE1lisis\u2026"],resultSuccess:"Identidad verificada",resultFailure:"Verificaci\xF3n fallida",resultSuccessDefault:"Verificaci\xF3n completada exitosamente.",resultFailureDefault:"No se pudo verificar la identidad.",snapshotLabel:"Captura registrada",confidenceLabel:"Confianza del an\xE1lisis",framesLabel:"Frames",verifiedLabel:"Verificado",errorTitle:"\u26A0\uFE0F Error de conexi\xF3n",btnRetryConnection:"Volver a intentar",httpsWarningTitle:"\u26A0\uFE0F Se requiere HTTPS en dispositivos m\xF3viles",httpsWarningDesc:"Est\xE1s accediendo por HTTP. Los navegadores m\xF3viles bloquean la c\xE1mara sin conexi\xF3n segura. Accede por https:// o desde localhost en una computadora.",camErrTitle:"\u{1F6AB} Acceso a c\xE1mara denegado",camErrDesc:"Debes permitir el acceso a la c\xE1mara. Ve a la configuraci\xF3n del navegador \u2192 Privacidad \u2192 C\xE1mara y habil\xEDtala para este sitio.",errPermission:{title:"\u{1F6AB} Permiso denegado",desc:"Debes permitir el acceso a la c\xE1mara. En iOS: Ajustes \u2192 Safari \u2192 C\xE1mara \u2192 Permitir. En Android: toca el \xEDcono de c\xE1mara en la barra de direcci\xF3n."},errNotFound:{title:"\u{1F4F7} C\xE1mara no encontrada",desc:"No se detect\xF3 ninguna c\xE1mara en este dispositivo."},errBusy:{title:"\u26A0\uFE0F C\xE1mara ocupada",desc:"La c\xE1mara est\xE1 siendo usada por otra app. Ci\xE9rrala y vuelve a intentarlo."},errConstrained:{title:"\u2699\uFE0F C\xE1mara no compatible",desc:"La c\xE1mara no soporta el modo requerido. Intenta con otro navegador."},errHTTPS:{title:"\u{1F512} Se requiere HTTPS",desc:"El acceso a la c\xE1mara requiere una conexi\xF3n segura (HTTPS). Contacta al administrador para configurar SSL."},errGeneric:{title:"\u{1F6AB} Error de c\xE1mara",desc:"No se pudo acceder a la c\xE1mara."},errNoAPI:{notSecure:"La c\xE1mara requiere HTTPS en dispositivos m\xF3viles. Accede al sitio con https:// o desde localhost.",generic:"Tu navegador no soporta acceso a c\xE1mara. Usa Chrome, Firefox o Safari actualizados."},challenges:{parpadea:{text:"Parpadea 2 veces",icon:"\u{1F441}\uFE0F",hint:"Cierra y abre los ojos lentamente"},derecha:{text:"Gira la cabeza a la derecha",icon:"\u27A1\uFE0F",hint:"Gira suavemente hacia tu derecha"},izquierda:{text:"Gira la cabeza a la izquierda",icon:"\u2B05\uFE0F",hint:"Gira suavemente hacia tu izquierda"},sonrie:{text:"Sonr\xEDe",icon:"\u{1F60A}",hint:"Muestra tu mejor sonrisa"}},previousCaptures:"\u25B8 Capturas anteriores"},x={endpoint:"verify_liveness.php",fetchTimeoutMs:3e4,captureIntervalMs:150,captureDurationMs:4e3,renderMode:"inline",triggerSelector:null,challenges:["parpadea","derecha","izquierda","sonrie"],tokenInputSelector:null,tokenInputName:"liveness_token",photoInputSelector:null,photoInputName:"liveness_photo",photoMaxWidth:640,photoMaxHeight:480,photoQuality:.82,csrfToken:null,photosEndpoint:null,theme:{},texts:{},triggerLabel:"Verificar identidad",triggerClass:null,showSnapshot:true,showGallery:true,onSuccess:null,onFailure:null,onCancel:null,onError:null};function b(i,t){let e=`[data-liveness-widget="${t}"]`;return`
 
 ${e} {
     --lv-primary:       ${i.colorPrimary};
@@ -16,6 +15,7 @@ ${e} {
     --lv-border-subtle: ${i.colorBorderSubtle};
     --lv-text:          ${i.colorText};
     --lv-text-muted:    ${i.colorTextMuted};
+    --lv-video-bg:      ${i.colorVideoBg};
     --lv-font-body:     ${i.fontBody};
     --lv-font-heading:  ${i.fontHeading};
     --lv-radius-card:   ${i.radiusCard};
@@ -42,11 +42,7 @@ ${e} .lv-card {
     border: 1px solid var(--lv-border);
     border-radius: var(--lv-radius-card);
     overflow: hidden;
-    box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,212,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04);
-    background-image:
-        radial-gradient(ellipse at 15% 50%, rgba(0,102,255,0.09) 0%,transparent 55%),
-        radial-gradient(ellipse at 85% 20%, rgba(0,212,255,0.07) 0%,transparent 45%),
-        radial-gradient(ellipse at 50% 90%, rgba(0,229,160,0.04) 0%,transparent 40%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 0 0 1px var(--lv-border);
 }
 
 /* HEADER */
@@ -56,14 +52,13 @@ ${e} .lv-header {
     display: flex;
     align-items: center;
     gap: 13px;
-    background: linear-gradient(180deg,rgba(0,212,255,0.04) 0%,transparent 100%);
+    background: var(--lv-surface);
 }
 ${e} .lv-logo-icon { width: 42px; height: 42px; flex-shrink: 0; }
 ${e} .lv-header-text h1 {
     font-family: var(--lv-font-heading);
-    font-size: 20px; font-weight: 700; letter-spacing: -0.4px;
-    background: linear-gradient(130deg,var(--lv-accent) 0%,var(--lv-primary) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    font-size: 20px; font-weight: 700; letter-spacing: -0.3px;
+    color: var(--lv-text);
 }
 ${e} .lv-header-text p {
     font-size: 11px; color: var(--lv-text-muted); letter-spacing: 1px;
@@ -83,8 +78,8 @@ ${e} .lv-step-circle {
 }
 ${e} .lv-step-label { font-size: 10px; color: var(--lv-text-muted); font-weight: 500; letter-spacing: 0.3px; transition: color 0.35s ease; white-space: nowrap; }
 ${e} .lv-step-line { flex: 1; height: 2px; background: rgba(136,146,176,0.12); margin-bottom: 22px; transition: background 0.4s ease; }
-${e} .lv-step.active .lv-step-circle { border-color: var(--lv-accent); color: var(--lv-accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.14),0 0 12px rgba(0,212,255,0.2); }
-${e} .lv-step.active .lv-step-label { color: var(--lv-accent); }
+${e} .lv-step.active .lv-step-circle { border-color: var(--lv-primary); color: var(--lv-primary); box-shadow: 0 0 0 3px rgba(13,110,253,0.12); }
+${e} .lv-step.active .lv-step-label { color: var(--lv-primary); }
 ${e} .lv-step.done .lv-step-circle { border-color: var(--lv-success); background: var(--lv-success); color: var(--lv-bg); }
 ${e} .lv-step.done .lv-step-label { color: var(--lv-success); }
 ${e} .lv-step.done + .lv-step-line { background: linear-gradient(90deg,var(--lv-success),rgba(0,229,160,0.4)); }
@@ -96,7 +91,7 @@ ${e} .lv-panel.visible { display: block; animation: lvFadeIn 0.3s ease forwards;
 @keyframes lvFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 /* VIDEO */
-${e} .lv-video-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: var(--lv-radius-inner); overflow: hidden; background: #050810; border: 1px solid var(--lv-border); }
+${e} .lv-video-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: var(--lv-radius-inner); overflow: hidden; background: var(--lv-video-bg); border: 1px solid var(--lv-border); }
 ${e} .lv-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
 ${e} .lv-video-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--lv-text-muted); }
 ${e} .lv-video-placeholder svg { opacity: 0.25; }
@@ -129,9 +124,9 @@ ${e} .lv-step2-title { font-family: var(--lv-font-heading); font-size: 15px; fon
 ${e} .lv-badge-live { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; background: rgba(0,229,160,0.12); color: var(--lv-success); border: 1px solid rgba(0,229,160,0.28); }
 ${e} .lv-badge-live::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--lv-success); animation: lvBlink 1.1s ease-in-out infinite; }
 @keyframes lvBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
-${e} .lv-video-mini-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: var(--lv-radius-inner); overflow: hidden; background: #050810; border: 1px solid var(--lv-border); margin-bottom: 14px; }
+${e} .lv-video-mini-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: var(--lv-radius-inner); overflow: hidden; background: var(--lv-video-bg); border: 1px solid var(--lv-border); margin-bottom: 14px; }
 ${e} .lv-video-mini { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-${e} .lv-frames-counter { position: absolute; top: 8px; right: 8px; background: rgba(8,12,24,0.75); border: 1px solid var(--lv-border); border-radius: 6px; padding: 3px 8px; font-size: 11px; font-family: 'Space Grotesk',monospace; color: var(--lv-accent); backdrop-filter: blur(4px); }
+${e} .lv-frames-counter { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 3px 8px; font-size: 11px; font-family: monospace; color: #fff; backdrop-filter: blur(4px); }
 ${e} .lv-challenge-box { text-align: center; padding: 10px 0 4px; }
 ${e} .lv-challenge-icon { font-size: 46px; margin-bottom: 10px; animation: lvFloat 2.2s ease-in-out infinite; display: block; line-height: 1; }
 @keyframes lvFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -141,7 +136,7 @@ ${e} .lv-progress-container { margin: 0 0 4px; }
 ${e} .lv-progress-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--lv-text-muted); margin-bottom: 6px; font-weight: 500; }
 ${e} .lv-progress-track { height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: visible; border: 1px solid rgba(255,255,255,0.04); position: relative; }
 ${e} .lv-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,var(--lv-primary),var(--lv-accent)); border-radius: 3px; transition: width 0.1s linear; position: relative; }
-${e} .lv-progress-fill::after { content: ''; position: absolute; right: -4px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--lv-accent); box-shadow: 0 0 10px rgba(0,212,255,0.8); }
+${e} .lv-progress-fill::after { content: ''; position: absolute; right: -4px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--lv-primary); box-shadow: none; }
 ${e} .lv-spinner-box { display: none; flex-direction: column; align-items: center; gap: 14px; padding: 30px 0 10px; }
 ${e} .lv-spinner { width: 42px; height: 42px; border: 3px solid rgba(0,212,255,0.12); border-top-color: var(--lv-accent); border-radius: 50%; animation: lvSpin 0.75s linear infinite; }
 @keyframes lvSpin { to { transform: rotate(360deg); } }
@@ -151,8 +146,8 @@ ${e} .lv-spinner-msg { font-size: 11px; color: rgba(180,190,210,0.5); margin: 6p
 /* STEP 3 RESULT */
 ${e} .lv-result-box { text-align: center; padding: 8px 0; }
 ${e} .lv-result-icon { width: 78px; height: 78px; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; }
-${e} .lv-result-icon.success { background: rgba(0,229,160,0.1); border: 2px solid var(--lv-success); box-shadow: 0 0 30px rgba(0,229,160,0.15); }
-${e} .lv-result-icon.failure { background: rgba(255,69,102,0.1); border: 2px solid var(--lv-danger); box-shadow: 0 0 30px rgba(255,69,102,0.15); }
+${e} .lv-result-icon.success { background: rgba(25,135,84,0.08); border: 2px solid var(--lv-success); box-shadow: none; }
+${e} .lv-result-icon.failure { background: rgba(220,53,69,0.08); border: 2px solid var(--lv-danger); box-shadow: none; }
 ${e} .lv-check-path { stroke: var(--lv-success); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: lvDrawCheck 0.5s cubic-bezier(0.65,0,0.35,1) forwards 0.15s; }
 @keyframes lvDrawCheck { to { stroke-dashoffset: 0; } }
 ${e} .lv-x-line { stroke: var(--lv-danger); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 25; stroke-dashoffset: 25; }
@@ -163,7 +158,7 @@ ${e} .lv-result-title { font-family: var(--lv-font-heading); font-size: 21px; fo
 ${e} .lv-result-title.success { color: var(--lv-success); }
 ${e} .lv-result-title.failure { color: var(--lv-danger); }
 ${e} .lv-result-reason { font-size: 13px; color: var(--lv-text-muted); line-height: 1.65; margin-bottom: 14px; padding: 0 4px; }
-${e} .lv-result-meta { display: flex; justify-content: center; gap: 24px; margin-bottom: 14px; padding: 12px 20px; background: rgba(0,229,160,0.05); border: 1px solid rgba(0,229,160,0.12); border-radius: 10px; }
+${e} .lv-result-meta { display: flex; justify-content: center; gap: 24px; margin-bottom: 14px; padding: 12px 20px; background: var(--lv-surface2); border: 1px solid var(--lv-border); border-radius: 10px; }
 ${e} .lv-meta-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 ${e} .lv-meta-value { font-family: var(--lv-font-heading); font-size: 22px; font-weight: 700; color: var(--lv-accent); }
 ${e} .lv-meta-label { font-size: 10px; color: var(--lv-text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
@@ -173,7 +168,7 @@ ${e} .lv-confidence-label { display: flex; justify-content: space-between; font-
 ${e} .lv-confidence-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
 ${e} .lv-confidence-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,var(--lv-success),#00c896); width: 0%; transition: width 1s cubic-bezier(.4,0,.2,1); }
 ${e} .lv-snapshot-container { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 16px; }
-${e} .lv-snapshot-img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 2px solid var(--lv-success); box-shadow: 0 0 12px rgba(0,224,150,0.3); }
+${e} .lv-snapshot-img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 2px solid var(--lv-success); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 ${e} .lv-snapshot-label { font-size: 10px; color: var(--lv-success); opacity: 0.75; letter-spacing: 0.5px; }
 ${e} .lv-error-card { background: rgba(255,69,102,0.07); border: 1px solid rgba(255,69,102,0.25); border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: left; }
 ${e} .lv-error-card h3 { font-size: 14px; font-weight: 600; color: var(--lv-danger); margin-bottom: 6px; }
@@ -191,10 +186,10 @@ ${e} .lv-photo-thumb:hover { transform: scale(1.06); border-color: rgba(255,255,
 ${e} .lv-btn { width: 100%; padding: 13px 24px; border-radius: 10px; border: none; font-family: var(--lv-font-body); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.2px; margin-top: 2px; display: block; }
 ${e} .lv-btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 ${e} .lv-btn + .lv-btn { margin-top: 8px; }
-${e} .lv-btn-primary { background: linear-gradient(135deg,var(--lv-primary),var(--lv-primary-dark)); color: #fff; box-shadow: 0 4px 18px rgba(0,102,255,0.35); }
-${e} .lv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,102,255,0.5); }
-${e} .lv-btn-success { background: linear-gradient(135deg,var(--lv-success-dark),var(--lv-success)); color: var(--lv-bg); box-shadow: 0 4px 18px rgba(0,229,160,0.25); }
-${e} .lv-btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,229,160,0.4); }
+${e} .lv-btn-primary { background: linear-gradient(135deg,var(--lv-primary),var(--lv-primary-dark)); color: #fff; box-shadow: 0 2px 6px rgba(13,110,253,0.25); }
+${e} .lv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,110,253,0.35); }
+${e} .lv-btn-success { background: linear-gradient(135deg,var(--lv-success-dark),var(--lv-success)); color: #fff; box-shadow: 0 2px 6px rgba(25,135,84,0.25); }
+${e} .lv-btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(25,135,84,0.35); }
 ${e} .lv-btn-ghost { background: rgba(255,255,255,0.04); color: var(--lv-text); border: 1px solid var(--lv-border); }
 ${e} .lv-btn-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(0,212,255,0.3); }
 ${e} .lv-btn-ghost-sm { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(180,190,210,0.6); font-size: 12px; padding: 7px 18px; border-radius: 8px; cursor: pointer; transition: border-color .2s,color .2s; margin-top: 10px; font-family: var(--lv-font-body); }
@@ -205,7 +200,7 @@ ${e} .lv-canvas { display: none; }
 
 /* RESPONSIVE */
 @media (max-width: 480px) {
-    ${e} .lv-card { max-width: 100%; border-radius: 0; border-left: none; border-right: none; border-top: none; min-height: 100dvh; }
+    ${e} .lv-card { max-width: 100%; border-radius: 0; border-left: none; border-right: none; border-top: none; }
     ${e} .lv-header { padding: 16px 18px 14px; }
     ${e} .lv-header-text h1 { font-size: 18px; }
     ${e} .lv-steps { padding: 14px 18px 12px; }
@@ -237,9 +232,9 @@ ${e} .lv-trigger-dot { width: 7px; height: 7px; border-radius: 50%; background: 
 @keyframes lvTrigDot { 0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb,var(--lv-success) 50%,transparent); } 60% { box-shadow: 0 0 0 7px color-mix(in srgb,var(--lv-success) 0%,transparent); } }
 
 /* MODAL */
-${e} .lv-modal-backdrop { position: fixed; inset: 0; z-index: 9999; background: rgba(0,4,20,0.78); backdrop-filter: blur(18px) saturate(160%); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+${e} .lv-modal-backdrop { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
 ${e} .lv-modal-backdrop.open { opacity: 1; pointer-events: auto; }
-${e} .lv-modal-backdrop .lv-card { max-width: 430px; width: 100%; max-height: 92dvh; overflow-y: auto; overflow-x: hidden; position: relative; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; border: 1px solid rgba(0,212,255,0.22); box-shadow: 0 40px 100px rgba(0,0,0,0.75), 0 0 80px color-mix(in srgb,var(--lv-primary) 12%,transparent), 0 0 0 1px rgba(255,255,255,0.04) inset; background-image: radial-gradient(ellipse at 50% -10%, color-mix(in srgb,var(--lv-primary) 18%,transparent) 0%, transparent 60%), radial-gradient(ellipse at 85% 20%, color-mix(in srgb,var(--lv-accent) 8%,transparent) 0%, transparent 45%); transform: translateY(36px) scale(0.96); transition: transform 0.4s cubic-bezier(0.34,1.25,0.64,1); }
+${e} .lv-modal-backdrop .lv-card { max-width: 430px; width: 100%; max-height: 92dvh; overflow-y: auto; overflow-x: hidden; position: relative; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent; border: 1px solid var(--lv-border); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.12); transform: translateY(36px) scale(0.96); transition: transform 0.4s cubic-bezier(0.34,1.25,0.64,1); }
 ${e} .lv-modal-backdrop.open .lv-card { transform: translateY(0) scale(1); }
 ${e} .lv-modal-close { position: absolute; top: 13px; right: 13px; z-index: 10; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--lv-text-muted); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s, color 0.2s; font-family: sans-serif; flex-shrink: 0; }
 ${e} .lv-modal-close:hover { background: rgba(255,69,102,0.15); border-color: rgba(255,69,102,0.45); color: var(--lv-danger); }
@@ -300,7 +295,7 @@ ${e} .lv-modal-backdrop .lv-video-mini-wrapper { aspect-ratio: 3/4; }
               <ellipse cx="200" cy="148" rx="108" ry="132" fill="black"/>
             </mask>
           </defs>
-          <rect width="400" height="300" fill="rgba(8,12,24,0.52)" mask="url(#${a}-oval)"/>
+          <rect width="400" height="300" fill="rgba(0,0,0,0.4)" mask="url(#${a}-oval)"/>
           <ellipse cx="200" cy="148" rx="108" ry="132" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-dasharray="9 5" opacity="0.65"/>
         </svg>
         <div class="lv-corner tl" data-lv="cTL"></div>
