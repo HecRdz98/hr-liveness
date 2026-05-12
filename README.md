@@ -141,13 +141,13 @@ $url = Storage::disk(config('liveness.photos_disk'))->url($modelo->liveness_phot
 
 | Prop | Tipo | Default | CSS variable |
 |---|---|---|---|
-| `primary-color` | `string` | `#0066ff` | `--lv-primary` |
-| `accent-color` | `string` | `#00d4ff` | `--lv-accent` |
-| `bg-color` | `string` | `#080c18` | `--lv-bg` |
-| `surface-color` | `string` | `#0d1226` | `--lv-surface` |
-| `text-color` | `string` | `#e8eaf6` | `--lv-text` |
-| `success-color` | `string` | `#00e5a0` | `--lv-success` |
-| `danger-color` | `string` | `#ff4566` | `--lv-danger` |
+| `primary-color` | `string` | `#0d6efd` | `--lv-primary` |
+| `accent-color` | `string` | `#0d6efd` | `--lv-accent` |
+| `bg-color` | `string` | `#ffffff` | `--lv-bg` |
+| `surface-color` | `string` | `#ffffff` | `--lv-surface` |
+| `text-color` | `string` | `#212529` | `--lv-text` |
+| `success-color` | `string` | `#198754` | `--lv-success` |
+| `danger-color` | `string` | `#dc3545` | `--lv-danger` |
 
 Para control total de tema usa el prop `theme` (array) que acepta cualquiera de las variables CSS del widget:
 
@@ -186,37 +186,52 @@ El componente genera automáticamente:
 
 ## Ejemplos de temas
 
+El tema por defecto es **claro y neutral** (Bootstrap-compatible). La zona de cámara siempre se mantiene oscura para visibilidad del video (`colorVideoBg`, default `#111827`).
+
 ```blade
-{{-- Tema claro --}}
+{{-- Default: claro, Bootstrap blue — sin props --}}
+<x-liveness::liveness-field name="liveness_token" />
+
+{{-- Marca personalizada, azul corporativo --}}
 <x-liveness::liveness-field
     name="liveness_token"
+    brand-name="Mi Empresa"
     primary-color="#2563eb"
-    accent-color="#3b82f6"
-    bg-color="#ffffff"
-    surface-color="#f8fafc"
-    text-color="#1e293b"
-    success-color="#16a34a"
-    danger-color="#dc2626"
 />
 
-{{-- Tema corporativo oscuro --}}
+{{-- Violeta / indigo --}}
 <x-liveness::liveness-field
     name="liveness_token"
-    primary-color="#1a56db"
-    accent-color="#7dd3fc"
-    bg-color="#0f172a"
-    surface-color="#1e293b"
+    primary-color="#7c3aed"
+    success-color="#16a34a"
 />
 
-{{-- Modal con tema violeta --}}
+{{-- Modal minimalista --}}
 <x-liveness::liveness-field
     name="liveness_token"
     render-mode="modal"
     trigger-label="Verificar identidad"
-    primary-color="#7c3aed"
-    accent-color="#a78bfa"
-    bg-color="#1a0533"
-    surface-color="#2d0a57"
+    primary-color="#0d6efd"
+/>
+
+{{-- Tema oscuro (estilo original del widget) --}}
+<x-liveness::liveness-field
+    name="liveness_token"
+    primary-color="#0066ff"
+    accent-color="#00d4ff"
+    bg-color="#080c18"
+    surface-color="#0d1226"
+    text-color="#e8eaf6"
+    success-color="#00e5a0"
+    danger-color="#ff4566"
+    :theme="[
+        'colorBorder'      => 'rgba(0,212,255,0.15)',
+        'colorBorderSubtle'=> 'rgba(255,255,255,0.05)',
+        'colorTextMuted'   => '#8892b0',
+        'colorVideoBg'     => '#050810',
+        'radiusCard'       => '20px',
+        'radiusInner'      => '12px',
+    ]"
 />
 ```
 
