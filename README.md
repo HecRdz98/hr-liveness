@@ -51,16 +51,18 @@ pip install mediapipe opencv-python numpy
 
 ## Uso rápido
 
-### En una vista Blade
+### Modo inline (pasos en tarjeta)
 
 ```blade
 <form method="POST" action="{{ route('formulario.store') }}">
     @csrf
 
-    <x-liveness::field
+    <x-liveness::liveness-field
         name="liveness_token"
         brand-name="{{ config('app.name') }}"
         primary-color="#4f46e5"
+        :show-snapshot="false"
+        :show-gallery="false"
     />
 
     @error('liveness_token')
@@ -71,6 +73,19 @@ pip install mediapipe opencv-python numpy
 </form>
 ```
 
+### Modo modal (botón → cámara pantalla completa)
+
+```blade
+<x-liveness::liveness-field
+    name="liveness_token"
+    render-mode="modal"
+    trigger-label="📷 Verificar identidad"
+    primary-color="#4f46e5"
+/>
+```
+
+El componente renderiza automáticamente el botón trigger. Al hacer clic abre un backdrop oscuro con la cámara en proporción retrato (3:4). En móvil se presenta como bottom sheet.
+
 ### En el FormRequest
 
 ```php
@@ -80,7 +95,7 @@ public function rules(): array
 {
     return [
         'liveness_token' => ['required', Rule::liveness()],
-        'liveness_photo' => ['nullable', 'string'],  // URL de la foto/evidencia
+        'liveness_photo' => ['nullable', 'string'],
     ];
 }
 ```
@@ -92,7 +107,7 @@ public function store(MiFormRequest $request)
 {
     MiModelo::create([
         'liveness_token' => $request->liveness_token,
-        'liveness_photo' => $request->liveness_photo,  // ruta en Storage
+        'liveness_photo' => $request->liveness_photo,
         'verified_at'    => now(),
     ]);
 }
@@ -103,17 +118,64 @@ $url = Storage::disk(config('liveness.photos_disk'))->url($modelo->liveness_phot
 
 ---
 
-## Props del componente `<x-liveness::field>`
+## Props del componente `<x-liveness::liveness-field>`
+
+### Identidad / marca
 
 | Prop | Tipo | Default | Descripción |
 |---|---|---|---|
 | `name` | `string` | `liveness_token` | Nombre base de los hidden inputs |
-| `brand-name` | `string` | `config('app.name')` | Nombre de marca en el widget |
+| `brand-name` | `string` | `config('app.name')` | Nombre de marca en el encabezado del widget |
 | `brand-subtitle` | `string` | `null` | Subtítulo bajo la marca |
-| `primary-color` | `string` | `null` | Color primario (`#4f46e5`) |
-| `accent-color` | `string` | `null` | Color de acento |
-| `challenges` | `array` | config | Desafíos: `['parpadea','sonrie',...]` |
-| `theme` | `array` | `[]` | Opciones de tema adicionales |
+
+### Modo de presentación
+
+| Prop | Tipo | Default | Descripción |
+|---|---|---|---|
+| `render-mode` | `string` | `inline` | `inline` — tarjeta con pasos · `modal` — botón que abre un overlay |
+| `trigger-label` | `string` | `Verificar identidad` | Texto del botón trigger (solo en modo `modal`) |
+| `show-snapshot` | `bool` | `true` | Muestra la foto circular en el resultado exitoso |
+| `show-gallery` | `bool` | `true` | Muestra la sección "Capturas anteriores" en el resultado |
+
+### Colores (atajos)
+
+| Prop | Tipo | Default | CSS variable |
+|---|---|---|---|
+| `primary-color` | `string` | `#0066ff` | `--lv-primary` |
+| `accent-color` | `string` | `#00d4ff` | `--lv-accent` |
+| `bg-color` | `string` | `#080c18` | `--lv-bg` |
+| `surface-color` | `string` | `#0d1226` | `--lv-surface` |
+| `text-color` | `string` | `#e8eaf6` | `--lv-text` |
+| `success-color` | `string` | `#00e5a0` | `--lv-success` |
+| `danger-color` | `string` | `#ff4566` | `--lv-danger` |
+
+Para control total de tema usa el prop `theme` (array) que acepta cualquiera de las variables CSS del widget:
+
+```blade
+<x-liveness::liveness-field
+    name="liveness_token"
+    :theme="[
+        'colorPrimary'    => '#6d28d9',
+        'colorAccent'     => '#8b5cf6',
+        'colorBg'         => '#0f172a',
+        'colorSurface'    => '#1e293b',
+        'colorText'       => '#f1f5f9',
+        'colorSuccess'    => '#34d399',
+        'colorDanger'     => '#f87171',
+        'radiusCard'      => '12px',
+        'fontBody'        => '\'Inter\', sans-serif',
+    ]"
+/>
+```
+
+### Verificación y captura
+
+| Prop | Tipo | Default | Descripción |
+|---|---|---|---|
+| `challenges` | `array` | config | Desafíos activos: `['parpadea','sonrie','derecha','izquierda']` |
+| `photo-max-width` | `int` | `640` | Ancho máximo del snapshot (px) |
+| `photo-max-height` | `int` | `480` | Alto máximo del snapshot (px) |
+| `photo-quality` | `float` | `0.82` | Calidad JPEG del snapshot (0.0–1.0) |
 | `texts` | `array` | `[]` | Override de textos / i18n |
 
 El componente genera automáticamente:
@@ -122,18 +184,47 @@ El componente genera automáticamente:
 
 ---
 
+## Ejemplos de temas
+
+```blade
+{{-- Tema claro --}}
+<x-liveness::liveness-field
+    name="liveness_token"
+    primary-color="#2563eb"
+    accent-color="#3b82f6"
+    bg-color="#ffffff"
+    surface-color="#f8fafc"
+    text-color="#1e293b"
+    success-color="#16a34a"
+    danger-color="#dc2626"
+/>
+
+{{-- Tema corporativo oscuro --}}
+<x-liveness::liveness-field
+    name="liveness_token"
+    primary-color="#1a56db"
+    accent-color="#7dd3fc"
+    bg-color="#0f172a"
+    surface-color="#1e293b"
+/>
+
+{{-- Modal con tema violeta --}}
+<x-liveness::liveness-field
+    name="liveness_token"
+    render-mode="modal"
+    trigger-label="Verificar identidad"
+    primary-color="#7c3aed"
+    accent-color="#a78bfa"
+    bg-color="#1a0533"
+    surface-color="#2d0a57"
+/>
+```
+
+---
+
 ## Foto como evidencia
 
-Cuando la verificación es exitosa, el backend guarda automáticamente un snapshot del usuario y devuelve la ruta. El widget la escribe en el hidden input `liveness_photo` para que llegue con el submit del formulario.
-
-La foto se redimensiona antes de enviarse (configurable):
-
-```javascript
-// Defaults: 640×480 px, calidad JPEG 82%
-photoMaxWidth:  640,
-photoMaxHeight: 480,
-photoQuality:   0.82,
-```
+Cuando la verificación es exitosa el backend guarda automáticamente un snapshot y devuelve la ruta. El widget la escribe en el hidden input `{name}_photo` para que llegue con el submit del formulario.
 
 ---
 
@@ -144,19 +235,6 @@ Para proteger rutas que requieren verificación de identidad:
 ```php
 Route::post('/accion', [Controller::class, 'accion'])
      ->middleware('liveness');
-```
-
----
-
-## Integración en formularios personalizados
-
-```php
-// En un ServiceProvider — registro como tipo de campo personalizado
-CustomFormFields::register('liveness', [
-    'label'     => 'Verificación Facial (Liveness)',
-    'blade'     => 'liveness::components.field',
-    'validator' => fn() => ['required', Rule::liveness()],
-]);
 ```
 
 ---
@@ -187,7 +265,8 @@ return [
 - PHP 8.1+ con `proc_open` habilitado
 - Python 3.8+ con `mediapipe`, `opencv-python`, `numpy`
 - Laravel 10, 11 o 12+
-- **HTTPS en producción** (requerido por los navegadores para acceder a la cámara en móviles)
+- HTTPS en producción (requerido por los navegadores para acceder a la cámara en móviles)
+- En desarrollo se soporta HTTP en `localhost`, `127.0.0.1` y `lvh.me` / `*.lvh.me`
 
 ---
 
