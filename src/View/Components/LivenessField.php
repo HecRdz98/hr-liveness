@@ -26,6 +26,7 @@ class LivenessField extends Component
         public float   $photoQuality   = 0.82,
         public string  $renderMode     = 'inline',
         public string  $triggerLabel   = 'Verificar identidad',
+        public ?string $triggerClass   = null,
         public bool    $showSnapshot   = true,
         public bool    $showGallery    = true,
     ) {}
