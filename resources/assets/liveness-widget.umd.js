@@ -125,13 +125,22 @@ ${e} .lv-badge-live { display: inline-flex; align-items: center; gap: 5px; paddi
 ${e} .lv-badge-live::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--lv-success); animation: lvBlink 1.1s ease-in-out infinite; }
 @keyframes lvBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
 ${e} .lv-video-mini-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: var(--lv-radius-inner); overflow: hidden; background: var(--lv-video-bg); border: 1px solid var(--lv-border); margin-bottom: 14px; }
-${e} .lv-video-mini { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+${e} .lv-video-mini { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
 ${e} .lv-video-mini-wrapper { transition: border-color 0.3s; }
 ${e} .lv-mini-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-${e} .lv-mini-oval-ring { transition: stroke 0.3s, opacity 0.3s; }
+${e} .lv-oval-group { transform-origin: 200px 148px; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
+${e} .lv-mini-oval-ring { transition: stroke 0.3s, stroke-width 0.3s, opacity 0.3s; }
+${e} .lv-focus-bracket { fill: none; stroke: var(--lv-success); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 38; stroke-dashoffset: 38; opacity: 0; }
 ${e} .lv-video-mini-wrapper.lv-freeze { border-color: var(--lv-success); }
-${e} .lv-video-mini-wrapper.lv-freeze .lv-mini-oval-ring { stroke: var(--lv-success); stroke-dasharray: none; opacity: 1; animation: lvOvalFreeze 0.55s ease-in-out 3; }
-@keyframes lvOvalFreeze { 0%,100% { filter: drop-shadow(0 0 3px var(--lv-success)); } 50% { filter: drop-shadow(0 0 10px var(--lv-success)); } }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-video-mini { transform: scaleX(-1) scale(1.07); }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-oval-group { transform: scale(0.91); }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-mini-oval-ring { stroke: var(--lv-success); stroke-dasharray: none; opacity: 1; stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--lv-success)); }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-focus-bracket { animation: lvBracketIn 0.3s ease forwards; }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-focus-brackets polyline:nth-child(1) { animation-delay: 0s; }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-focus-brackets polyline:nth-child(2) { animation-delay: 0.06s; }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-focus-brackets polyline:nth-child(3) { animation-delay: 0.12s; }
+${e} .lv-video-mini-wrapper.lv-freeze .lv-focus-brackets polyline:nth-child(4) { animation-delay: 0.18s; }
+@keyframes lvBracketIn { to { stroke-dashoffset: 0; opacity: 1; } }
 ${e} .lv-frames-counter { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 3px 8px; font-size: 11px; font-family: monospace; color: #fff; backdrop-filter: blur(4px); }
 ${e} .lv-challenge-box { text-align: center; padding: 10px 0 4px; }
 ${e} .lv-challenge-icon { font-size: 46px; margin-bottom: 10px; animation: lvFloat 2.2s ease-in-out infinite; display: block; line-height: 1; }
@@ -334,7 +343,7 @@ ${e} .lv-modal-backdrop .lv-video-mini-wrapper { aspect-ratio: 3/4; }
       <div class="lv-video-mini-wrapper">
         <video class="lv-video-mini" data-lv="videoMini" autoplay playsinline webkit-playsinline muted></video>
         <div class="lv-frames-counter" data-lv="framesCounter">0 frames</div>
-        <svg class="lv-mini-overlay" data-lv="miniOverlay" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><mask id="${a}-oval2"><rect width="400" height="300" fill="white"/><ellipse cx="200" cy="148" rx="108" ry="132" fill="black"/></mask></defs><rect width="400" height="300" fill="rgba(8,12,24,0.28)" mask="url(#${a}-oval2)"/><ellipse class="lv-mini-oval-ring" cx="200" cy="148" rx="108" ry="132" fill="none" stroke="#00d4ff" stroke-width="2" stroke-dasharray="9 5" opacity="0.45"/></svg>
+        <svg class="lv-mini-overlay" data-lv="miniOverlay" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><mask id="${a}-oval2"><rect width="400" height="300" fill="white"/><ellipse cx="200" cy="148" rx="108" ry="132" fill="black"/></mask></defs><rect width="400" height="300" fill="rgba(8,12,24,0.28)" mask="url(#${a}-oval2)"/><g class="lv-oval-group"><ellipse class="lv-mini-oval-ring" cx="200" cy="148" rx="108" ry="132" fill="none" stroke="#00d4ff" stroke-width="2" stroke-dasharray="9 5" opacity="0.45"/><g class="lv-focus-brackets"><polyline class="lv-focus-bracket" points="110,28 92,28 92,48"/><polyline class="lv-focus-bracket" points="290,28 308,28 308,48"/><polyline class="lv-focus-bracket" points="110,268 92,268 92,248"/><polyline class="lv-focus-bracket" points="290,268 308,268 308,248"/></g></g></svg>
       </div>
       <div class="lv-challenge-box" data-lv="challengeBox">
         <span class="lv-challenge-icon" data-lv="chIcon">\u{1F441}\uFE0F</span>
