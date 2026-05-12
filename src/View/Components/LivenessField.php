@@ -29,6 +29,7 @@ class LivenessField extends Component
         public ?string $triggerClass   = null,
         public bool    $showSnapshot   = true,
         public bool    $showGallery    = true,
+        public bool    $lockOnSuccess  = false,
     ) {}
 
     public function render()
