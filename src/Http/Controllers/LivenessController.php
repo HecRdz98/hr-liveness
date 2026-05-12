@@ -147,6 +147,18 @@ class LivenessController extends Controller
         return null;
     }
 
+    public function servePhoto(string $filename): \Illuminate\Http\Response
+    {
+        $path = config('liveness.photos_path', 'liveness/photos') . '/' . $filename;
+        $disk = Storage::disk(config('liveness.photos_disk', 'local'));
+        abort_unless($disk->exists($path), 404);
+
+        return response($disk->get($path), 200, [
+            'Content-Type'  => 'image/jpeg',
+            'Cache-Control' => 'private, max-age=3600',
+        ]);
+    }
+
     private function saveSnapshot(?string $snapshot, string $challenge): ?string
     {
         if (!$snapshot || strlen($snapshot) > config('liveness.max_snapshot_size', 800000)) return null;
@@ -162,6 +174,6 @@ class LivenessController extends Controller
 
         Storage::disk(config('liveness.photos_disk', 'local'))->put($path, $imgData);
 
-        return $path;
+        return url('liveness/photo/' . $filename);
     }
 }

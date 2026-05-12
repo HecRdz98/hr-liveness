@@ -59,6 +59,35 @@
         onSuccess: function (result) {
             var input = document.getElementById('{{ $name }}');
             if (input) input.dispatchEvent(new Event('change', { bubbles: true }));
+
+            @if($lockOnSuccess)
+            var mount = document.getElementById('{{ $name }}-liveness-mount');
+            if (mount) {
+                mount.querySelectorAll('[data-lv-action="reiniciar"]').forEach(function (b) {
+                    b.style.display = 'none';
+                });
+                setTimeout(function () {
+                    var closeBtn = mount.querySelector('.lv-modal-close');
+                    if (closeBtn) closeBtn.click();
+                    setTimeout(function () {
+                        var trigger = mount.querySelector('.lv-trigger-btn');
+                        if (!trigger) return;
+                        trigger.disabled = true;
+                        trigger.innerHTML =
+                            '<i class="bi bi-check-circle-fill me-1" style="color:#00e5a0"></i>' +
+                            '<span>Verificado</span>';
+                        Object.assign(trigger.style, {
+                            opacity:       '1',
+                            cursor:        'default',
+                            background:    'rgba(0,229,160,.15)',
+                            border:        '1.5px solid #00e5a0',
+                            color:         '#00e5a0',
+                            pointerEvents: 'none',
+                        });
+                    }, 120);
+                }, 2500);
+            }
+            @endif
         },
     });
 })();
