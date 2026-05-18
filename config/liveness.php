@@ -13,4 +13,5 @@ return [
     'photos_path'    => 'liveness/photos',
     'log_channel'    => env('LIVENESS_LOG_CHANNEL', 'stack'),
     'brand_name'     => env('LIVENESS_BRAND', config('app.name', 'App')),
+    'middleware'     => ['web'],
 ];

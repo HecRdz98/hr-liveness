@@ -270,7 +270,20 @@ return [
     'photos_disk'       => 'local',
     'photos_path'       => 'liveness/photos',
     'log_channel'       => env('LIVENESS_LOG_CHANNEL', 'stack'),
+    'middleware'        => ['web'],
 ];
+```
+
+### Middleware de rutas
+
+Por defecto las rutas del paquete (`/liveness/verify`, `/liveness/photos`, `/liveness/photo/{filename}`) usan `['web']`. Puedes sobreescribir el stack en tu `config/liveness.php` publicado para inyectar middleware adicional sin modificar el vendor:
+
+```php
+// Ejemplo para apps multi-tenant (stancl/tenancy)
+'middleware' => [
+    'web',
+    \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::class,
+],
 ```
 
 ---
