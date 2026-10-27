@@ -30,6 +30,7 @@ class LivenessField extends Component
         public bool    $showSnapshot   = true,
         public bool    $showGallery    = true,
         public bool    $lockOnSuccess  = false,
+        public ?bool   $recordVideo    = null,   // null = config('liveness.record_video')
     ) {}
 
     public function render()

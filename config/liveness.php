@@ -11,6 +11,14 @@ return [
     'challenges'     => ['parpadea', 'derecha', 'izquierda', 'sonrie'],
     'photos_disk'    => 'local',
     'photos_path'    => 'liveness/photos',
+
+    // Video de la prueba de vida (opt-in). Solo se guarda si la prueba pasa.
+    'record_video'          => env('LIVENESS_RECORD_VIDEO', false),
+    'video_max_size'        => 4000000,   // bytes del video ya decodificado (~4 MB)
+    'video_max_duration_ms' => 8000,      // el widget corta la grabación al llegar a este límite
+    'video_bitrate'         => 500000,    // bits/s pedidos a MediaRecorder (≈250 KB por 4 s)
+    'videos_disk'           => null,      // null = usa photos_disk
+    'videos_path'           => 'liveness/videos',
     'log_channel'    => env('LIVENESS_LOG_CHANNEL', 'stack'),
     'brand_name'     => env('LIVENESS_BRAND', config('app.name', 'App')),
     'middleware'     => ['web'],

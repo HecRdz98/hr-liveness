@@ -176,11 +176,13 @@ Para control total de tema usa el prop `theme` (array) que acepta cualquiera de 
 | `photo-max-width` | `int` | `640` | Ancho máximo del snapshot (px) |
 | `photo-max-height` | `int` | `480` | Alto máximo del snapshot (px) |
 | `photo-quality` | `float` | `0.82` | Calidad JPEG del snapshot (0.0–1.0) |
+| `record-video` | `bool` | config | Graba video durante el reto. Solo puede **apagarlo** para un campo; si `record_video` está apagado en config, no graba |
 | `texts` | `array` | `[]` | Override de textos / i18n |
 
 El componente genera automáticamente:
 - `<input type="hidden" name="{name}">` — token de verificación
-- `<input type="hidden" name="{name}_photo">` — ruta de la foto evidencia
+- `<input type="hidden" name="{name}_photo">` — URL de la foto evidencia
+- `<input type="hidden" name="{name}_video">` — ruta del video evidencia (solo con `record_video` activo)
 
 ---
 
@@ -241,6 +243,40 @@ El tema por defecto es **claro y neutral** (Bootstrap-compatible). La zona de c�
 
 Cuando la verificación es exitosa el backend guarda automáticamente un snapshot y devuelve la ruta. El widget la escribe en el hidden input `{name}_photo` para que llegue con el submit del formulario.
 
+## Video como evidencia (opcional)
+
+Apagado por defecto. Se activa con `LIVENESS_RECORD_VIDEO=true` (o `'record_video' => true`).
+
+- El widget graba con `MediaRecorder` mientras dura el reto (webm en Chrome/Firefox/Android, mp4 en Safari/iOS), sin audio, y lo envía junto con los frames.
+- El servidor **solo guarda el video si la prueba pasa**, en `videos_disk` (default: `photos_disk`) bajo `videos_path`. Valida tamaño (`video_max_size`) y que el contenido sea webm/mp4 real.
+- Si el navegador no soporta `MediaRecorder` o el video excede el límite, la prueba sigue funcionando sin video (`video_path: null`).
+
+Respuesta de `POST /liveness/verify` cuando pasa:
+
+```json
+{
+  "passed": true, "confidence": 88, "token": "…",
+  "photo_url":  "https://app.test/liveness/photo/20261027_171746_79d86216_sonre.jpg",
+  "photo_path": "liveness/photos/20261027_171746_79d86216_sonre.jpg",
+  "video_path": "liveness/videos/20261027_171746_aa8a5ac2_sonre.webm"
+}
+```
+
+El token firmado incluye las mismas rutas en los claims `photo` y `video` (además de `challenge` y `confidence`). **Toma las rutas del token verificado, no de los hidden inputs**, que el cliente puede alterar:
+
+```php
+$r = liveness_token_verify($request->liveness_token, config('liveness.secret_key'), config('liveness.min_confidence'));
+abort_unless($r['valid'], 422);
+
+$disk = Storage::disk(config('liveness.videos_disk') ?? config('liveness.photos_disk'));
+if ($video = $r['payload']['video'] ?? null) {
+    Storage::disk('s3')->writeStream("evidencias/{$id}/" . basename($video), $disk->readStream($video));
+    $disk->delete($video);
+}
+```
+
+> El límite de duración (`video_max_duration_ms`) se aplica en el navegador; el servidor garantiza el de tamaño. Revisa que `post_max_size` de PHP cubra el base64 del video (~1.37× su tamaño) más los frames.
+
 ---
 
 ## Middleware
@@ -269,6 +305,12 @@ return [
     'challenges'        => ['parpadea', 'derecha', 'izquierda', 'sonrie'],
     'photos_disk'       => 'local',
     'photos_path'       => 'liveness/photos',
+    'record_video'          => env('LIVENESS_RECORD_VIDEO', false),
+    'video_max_size'        => 4000000,  // bytes
+    'video_max_duration_ms' => 8000,
+    'video_bitrate'         => 500000,   // bits/s
+    'videos_disk'           => null,     // null = photos_disk
+    'videos_path'           => 'liveness/videos',
     'log_channel'       => env('LIVENESS_LOG_CHANNEL', 'stack'),
     'middleware'        => ['web'],
 ];

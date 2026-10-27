@@ -16,11 +16,13 @@ class LivenessController extends Controller
             'frames'    => 'required|array|min:5',
             'challenge' => 'required|string',
             'snapshot'  => 'nullable|string',
+            'video'     => 'nullable|string',
         ]);
 
         $frames    = array_slice($data['frames'], 0, config('liveness.max_frames', 25));
         $challenge = $data['challenge'];
         $snapshot  = $data['snapshot'] ?? null;
+        $video     = config('liveness.record_video', false) ? ($data['video'] ?? null) : null;
 
         $resultado = $this->runPython($frames, $challenge);
 
@@ -34,21 +36,30 @@ class LivenessController extends Controller
             'frames_analyzed' => $resultado['frames_analyzed'] ?? 0,
             'passed'          => $resultado['passed'] ?? false,
             'confidence'      => $resultado['confidence'] ?? null,
+            'video_received'  => $video !== null,
             'ip'              => $request->ip(),
         ]);
 
-        // Guardar foto si pasó
+        // Guardar evidencia (foto y video) si pasó
         if ($resultado['passed'] ?? false) {
-            $resultado['photo_url'] = $this->saveSnapshot($snapshot, $challenge);
+            $photoPath = $this->saveSnapshot($snapshot, $challenge);
+            $resultado['photo_url']  = $photoPath ? url('liveness/photo/' . basename($photoPath)) : null;
+            $resultado['photo_path'] = $photoPath;
 
-            // Firmar token
-            $resultado['token'] = liveness_token_sign([
+            $videoPath = $video ? $this->saveVideo($video, $challenge) : null;
+            $resultado['video_path'] = $videoPath;
+
+            // Firmar token. photo/video van firmados para que el consumidor
+            // tome las rutas del token y no de un input que manda el cliente.
+            $resultado['token'] = liveness_token_sign(array_filter([
                 'iat'        => time(),
                 'exp'        => time() + config('liveness.token_ttl', 1800),
                 'challenge'  => $challenge,
                 'confidence' => $resultado['confidence'] ?? 0,
+                'photo'      => $photoPath,
+                'video'      => $videoPath,
                 'v'          => 1,
-            ], config('liveness.secret_key'));
+            ], fn($v) => $v !== null), config('liveness.secret_key'));
         }
 
         return response()->json($resultado);
@@ -174,6 +185,35 @@ class LivenessController extends Controller
 
         Storage::disk(config('liveness.photos_disk', 'local'))->put($path, $imgData);
 
-        return url('liveness/photo/' . $filename);
+        return $path;
+    }
+
+    private function saveVideo(string $video, string $challenge): ?string
+    {
+        $maxBytes = (int) config('liveness.video_max_size', 4000000);
+
+        // Prechequeo barato sobre el base64 (≈ 4/3 del binario) antes de decodificar
+        if (strlen($video) > intdiv($maxBytes * 4, 3) + 64) return null;
+
+        if (!preg_match('/^data:video\/(webm|mp4);base64,(.+)$/is', $video, $m)) return null;
+
+        $bin = base64_decode($m[2], true);
+        if ($bin === false || strlen($bin) === 0 || strlen($bin) > $maxBytes) return null;
+
+        // Validar contenido real: EBML para webm, caja ftyp para mp4
+        $ext   = strtolower($m[1]);
+        $valid = $ext === 'webm'
+            ? str_starts_with($bin, "\x1A\x45\xDF\xA3")
+            : substr($bin, 4, 4) === 'ftyp';
+        if (!$valid) return null;
+
+        $slug     = preg_replace('/[^a-z]/', '', strtolower($challenge));
+        $filename = date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '_' . $slug . '.' . $ext;
+        $path     = config('liveness.videos_path', 'liveness/videos') . '/' . $filename;
+        $disk     = config('liveness.videos_disk') ?? config('liveness.photos_disk', 'local');
+
+        Storage::disk($disk)->put($path, $bin);
+
+        return $path;
     }
 }

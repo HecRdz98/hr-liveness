@@ -16,6 +16,20 @@
        id="{{ $name }}_photo"
        value="{{ old($name . '_photo') }}">
 
+@php
+    // El servidor descarta el video si record_video está apagado en config,
+    // así que la prop solo puede apagarlo para este campo, no forzarlo.
+    $_lvRecordVideo = config('liveness.record_video', false) && ($recordVideo ?? true);
+@endphp
+
+@if($_lvRecordVideo)
+{{-- Hidden input para la ruta del video (evidencia). La fuente confiable es el claim "video" del token. --}}
+<input type="hidden"
+       name="{{ $name }}_video"
+       id="{{ $name }}_video"
+       value="{{ old($name . '_video') }}">
+@endif
+
 {{-- Contenedor donde se monta el widget --}}
 <div id="{{ $name }}-liveness-mount"></div>
 
@@ -53,6 +67,11 @@
         photoMaxWidth:      {{ $photoMaxWidth ?? 'null' }},
         photoMaxHeight:     {{ $photoMaxHeight ?? 'null' }},
         photoQuality:       {{ $photoQuality }},
+        recordVideo:        {{ $_lvRecordVideo ? 'true' : 'false' }},
+        videoInputSelector: {!! $_lvRecordVideo ? "'#" . $name . "_video'" : 'null' !!},
+        videoMaxDurationMs: {{ (int) config('liveness.video_max_duration_ms', 8000) }},
+        videoMaxBytes:      {{ (int) config('liveness.video_max_size', 4000000) }},
+        videoBitsPerSecond: {{ (int) config('liveness.video_bitrate', 500000) }},
         challenges:         @json($_lvChallenges),
         theme:              theme,
         texts:              @json($texts),
