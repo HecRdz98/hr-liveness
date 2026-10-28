@@ -159,6 +159,19 @@ def decodificar_frame(frame_b64):
         return None
 
 
+def nitidez_rostro(img, lm):
+    """Varianza del Laplaciano sobre el recorte del rostro (más alto = más nítido)."""
+    h, w = img.shape[:2]
+    xs = [p.x for p in lm]
+    ys = [p.y for p in lm]
+    x1, x2 = max(int(min(xs) * w), 0), min(int(max(xs) * w), w)
+    y1, y2 = max(int(min(ys) * h), 0), min(int(max(ys) * h), h)
+    if x2 - x1 < 20 or y2 - y1 < 20:
+        return 0.0
+    gris = cv2.cvtColor(img[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY)
+    return float(cv2.Laplacian(gris, cv2.CV_64F).var())
+
+
 # ─────────────────────────────────────────────────────────────
 # 5. PROCESADORES DE FRAMES (uno por API)
 # ─────────────────────────────────────────────────────────────
@@ -167,7 +180,7 @@ def decodificar_frame(frame_b64):
 def extraer_landmarks_legacy(frames_b64):
     """
     Usa mp.solutions.face_mesh (mediapipe < 0.10.14).
-    Retorna lista de listas de landmarks (o None si no hay cara en ese frame).
+    Retorna una lista con (landmarks, nitidez) por frame, o None si no hay cara en ese frame.
     """
     mp_face_mesh = mp.solutions.face_mesh
     resultados = []
@@ -188,7 +201,8 @@ def extraer_landmarks_legacy(frames_b64):
             res = face_mesh.process(img_rgb)
 
             if res.multi_face_landmarks:
-                resultados.append(res.multi_face_landmarks[0].landmark)
+                lm = res.multi_face_landmarks[0].landmark
+                resultados.append((lm, nitidez_rostro(img, lm)))
             else:
                 resultados.append(None)
 
@@ -222,7 +236,8 @@ def extraer_landmarks_tasks(frames_b64):
             res = detector.detect(mp_img)
 
             if res.face_landmarks:
-                resultados.append(res.face_landmarks[0])
+                lm = res.face_landmarks[0]
+                resultados.append((lm, nitidez_rostro(img, lm)))
             else:
                 resultados.append(None)
 
@@ -238,7 +253,76 @@ def extraer_landmarks(frames_b64):
 
 
 # ─────────────────────────────────────────────────────────────
-# 6. ANÁLISIS PRINCIPAL
+# 6. SELECCIÓN DE LA FOTO DE REFERENCIA
+# ─────────────────────────────────────────────────────────────
+
+
+def metricas_pose(lm):
+    """
+    Pose relativa a la cara (no al encuadre):
+      yaw   — desplazamiento horizontal de la nariz respecto al centro de los ojos,
+              normalizado por la distancia entre ojos (≈0 de frente).
+      pitch — posición vertical de la nariz entre ojos y mentón (0..1; se compara contra la mediana).
+      boca  — apertura de labios normalizada por la altura de la cara.
+      dentro — todos los landmarks dentro del cuadro.
+    """
+    ojo_i, ojo_d, nariz, menton, frente = lm[33], lm[263], lm[1], lm[152], lm[10]
+    ojos_x = (ojo_i.x + ojo_d.x) / 2.0
+    ojos_y = (ojo_i.y + ojo_d.y) / 2.0
+    inter = abs(ojo_d.x - ojo_i.x)
+    alto = abs(menton.y - frente.y)
+    xs = [p.x for p in lm]
+    ys = [p.y for p in lm]
+    return {
+        "yaw": (nariz.x - ojos_x) / inter if inter > 1e-6 else 1.0,
+        "pitch": (nariz.y - ojos_y) / (menton.y - ojos_y) if menton.y - ojos_y > 1e-6 else 1.0,
+        "boca": abs(lm[13].y - lm[14].y) / alto if alto > 1e-6 else 1.0,
+        "dentro": min(xs) >= 0.01 and min(ys) >= 0.01 and max(xs) <= 0.99 and max(ys) <= 0.99,
+    }
+
+
+def elegir_foto(frames_info):
+    """
+    Elige el frame más útil como foto de referencia: de frente, ojos abiertos,
+    boca cerrada, cara completa y nítido, con leve preferencia por los primeros
+    frames (antes de ejecutar el reto).
+    frames_info: lista de dicts {indice, ear, nitidez, yaw, pitch, boca, dentro}.
+    Retorna (indice, metricas) o (None, None) si no hay frames con cara.
+    """
+    if not frames_info:
+        return None, None
+
+    total = max(f["indice"] for f in frames_info) + 1
+    pitch_ref = float(np.median([f["pitch"] for f in frames_info]))
+    nitidez_max = max(f["nitidez"] for f in frames_info) or 1.0
+
+    def penalizacion(f):
+        return (
+            3.0 * abs(f["yaw"])
+            + 2.0 * abs(f["pitch"] - pitch_ref)
+            + 4.0 * max(0.0, 0.24 - f["ear"])
+            + 3.0 * f["boca"]
+            + 0.5 * (1.0 - f["nitidez"] / nitidez_max)
+            + 0.15 * (f["indice"] / total)
+            + (10.0 if not f["dentro"] else 0.0)
+        )
+
+    mejor = min(frames_info, key=penalizacion)
+    return mejor["indice"], {
+        "yaw": round(mejor["yaw"], 3),
+        "pitch_dev": round(mejor["pitch"] - pitch_ref, 3),
+        "ear": round(mejor["ear"], 3),
+        "mouth": round(mejor["boca"], 3),
+        "sharpness": round(mejor["nitidez"], 1),
+        "score": round(penalizacion(mejor), 3),  # menor = mejor
+        # Umbrales de una foto apta para comparar contra un documento
+        "frontal": abs(mejor["yaw"]) < 0.12 and mejor["ear"] > 0.2
+        and mejor["boca"] < 0.06 and mejor["dentro"],
+    }
+
+
+# ─────────────────────────────────────────────────────────────
+# 7. ANÁLISIS PRINCIPAL
 # ─────────────────────────────────────────────────────────────
 
 
@@ -253,18 +337,24 @@ def analizar_frames(frames_b64, challenge):
     ear_values = []
     yaw_values = []
     mouth_values = []
+    frames_info = []
     frames_con_cara = 0
 
-    for lm in todos_landmarks:
-        if lm is None:
+    for indice, item in enumerate(todos_landmarks):
+        if item is None:
             continue
 
+        lm, nitidez = item
         frames_con_cara += 1
 
         # EAR promedio (ambos ojos)
         ear_izq = calcular_ear(lm, OJO_IZQ)
         ear_der = calcular_ear(lm, OJO_DER)
         ear_values.append((ear_izq + ear_der) / 2.0)
+
+        frames_info.append(
+            dict(indice=indice, ear=ear_values[-1], nitidez=nitidez, **metricas_pose(lm))
+        )
 
         # Yaw: posición X normalizada de la punta de la nariz (landmark 1)
         yaw_values.append(float((lm[1].x - 0.5) * 100))
@@ -356,7 +446,7 @@ def analizar_frames(frames_b64, challenge):
         reason = f"Desafío no reconocido: '{challenge}'"
         detail = "Válidos: parpadea, derecha, izquierda, sonríe"
 
-    return {
+    resultado = {
         "passed": passed,
         "reason": reason,
         "frames_analyzed": frames_con_cara,
@@ -364,9 +454,14 @@ def analizar_frames(frames_b64, challenge):
         "confidence": max(0, confidence),
     }
 
+    if passed:
+        resultado["photo_frame"], resultado["photo_metrics"] = elegir_foto(frames_info)
+
+    return resultado
+
 
 # ─────────────────────────────────────────────────────────────
-# 7. PUNTO DE ENTRADA
+# 8. PUNTO DE ENTRADA
 # ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

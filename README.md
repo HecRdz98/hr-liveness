@@ -241,7 +241,15 @@ El tema por defecto es **claro y neutral** (Bootstrap-compatible). La zona de c�
 
 ## Foto como evidencia
 
-Cuando la verificación es exitosa el backend guarda automáticamente un snapshot y devuelve la ruta. El widget la escribe en el hidden input `{name}_photo` para que llegue con el submit del formulario.
+Cuando la verificación es exitosa el backend guarda automáticamente una foto y devuelve la ruta. El widget la escribe en el hidden input `{name}_photo` para que llegue con el submit del formulario.
+
+Por defecto (`photo_source => 'frame'`) la foto **la elige el servidor** entre los frames que se analizaron: la de pose más frontal, ojos abiertos, boca cerrada, cara completa dentro del cuadro y mayor nitidez (varianza del Laplaciano), con preferencia leve por los primeros frames, antes de ejecutar el reto. Así la foto sirve para compararla contra un documento y queda ligada a la prueba que pasó. Con `'client'` se usa el snapshot que manda el widget, como en v1.1.
+
+La respuesta incluye `photo_source` (`frame`|`client`), `photo_frame` (índice) y `photo_metrics` (`yaw`, `pitch_dev`, `ear`, `mouth`, `sharpness`, `score` y `frontal`, que indica si cumple los umbrales de una foto de frente). El token firma `photo_source` y `photo_frontal`.
+
+> Requiere el `verify_liveness.py` de v1.2: vuelve a publicarlo con `php artisan vendor:publish --tag=liveness-python --force`. Con un script anterior el servidor usa el snapshot del cliente (`photo_source: client`).
+>
+> Los frames, igual que el snapshot, se capturan espejados (vista selfie).
 
 ## Video como evidencia (opcional)
 
@@ -305,6 +313,7 @@ return [
     'challenges'        => ['parpadea', 'derecha', 'izquierda', 'sonrie'],
     'photos_disk'       => 'local',
     'photos_path'       => 'liveness/photos',
+    'photo_source'      => 'frame',  // 'frame' (elige el servidor) | 'client' (snapshot del widget)
     'record_video'          => env('LIVENESS_RECORD_VIDEO', false),
     'video_max_size'        => 4000000,  // bytes
     'video_max_duration_ms' => 8000,

@@ -42,9 +42,17 @@ class LivenessController extends Controller
 
         // Guardar evidencia (foto y video) si pasó
         if ($resultado['passed'] ?? false) {
-            $photoPath = $this->saveSnapshot($snapshot, $challenge);
-            $resultado['photo_url']  = $photoPath ? url('liveness/photo/' . basename($photoPath)) : null;
-            $resultado['photo_path'] = $photoPath;
+            // Foto de referencia: el frame que eligió el análisis (de frente y nítido).
+            // El snapshot del cliente queda como respaldo si el script no devolvió índice.
+            $frameIdx    = $resultado['photo_frame'] ?? null;
+            $photoSource = config('liveness.photo_source', 'frame') === 'frame' && is_int($frameIdx) && isset($frames[$frameIdx])
+                ? 'frame' : 'client';
+            $photoPath   = $this->saveSnapshot($photoSource === 'frame' ? $frames[$frameIdx] : $snapshot, $challenge);
+            if ($photoSource === 'client') $resultado['photo_frame'] = $resultado['photo_metrics'] = null;
+
+            $resultado['photo_url']    = $photoPath ? url('liveness/photo/' . basename($photoPath)) : null;
+            $resultado['photo_path']   = $photoPath;
+            $resultado['photo_source'] = $photoPath ? $photoSource : null;
 
             $videoPath = $video ? $this->saveVideo($video, $challenge) : null;
             $resultado['video_path'] = $videoPath;
@@ -56,8 +64,11 @@ class LivenessController extends Controller
                 'exp'        => time() + config('liveness.token_ttl', 1800),
                 'challenge'  => $challenge,
                 'confidence' => $resultado['confidence'] ?? 0,
-                'photo'      => $photoPath,
-                'video'      => $videoPath,
+                'photo'         => $photoPath,
+                'photo_source'  => $resultado['photo_source'],
+                'photo_frontal' => $photoPath && $photoSource === 'frame'
+                    ? (bool) ($resultado['photo_metrics']['frontal'] ?? false) : null,
+                'video'         => $videoPath,
                 'v'          => 1,
             ], fn($v) => $v !== null), config('liveness.secret_key'));
         }

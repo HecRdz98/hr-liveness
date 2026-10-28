@@ -11,6 +11,7 @@ return [
     'challenges'     => ['parpadea', 'derecha', 'izquierda', 'sonrie'],
     'photos_disk'    => 'local',
     'photos_path'    => 'liveness/photos',
+    'photo_source'   => 'frame',        // 'frame' = el servidor elige el frame más frontal y nítido · 'client' = snapshot del widget
 
     // Video de la prueba de vida (opt-in). Solo se guarda si la prueba pasa.
     'record_video'          => env('LIVENESS_RECORD_VIDEO', false),

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.0 — 2026-10-28
+- La foto de evidencia la elige el servidor entre los frames analizados (más frontal, ojos abiertos, boca cerrada, cara completa y nítida) en lugar de usar el snapshot del cliente. Config `photo_source` (`frame` por defecto, `client` para el comportamiento anterior)
+- `verify_liveness.py` devuelve `photo_frame` y `photo_metrics`; hay que volver a publicarlo (`--tag=liveness-python --force`). Con un script anterior se usa el snapshot del cliente
+- La respuesta agrega `photo_source`, `photo_frame` y `photo_metrics`; el token agrega los claims `photo_source` y `photo_frontal`
+
 ## v1.1.1 — 2026-10-28
 - Texto del spinner: «Analizando...» en lugar de «Analizando con IA...»
 
