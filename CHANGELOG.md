@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.1 — 2026-10-31
+- El widget prefiere MP4/H.264 al grabar video: el VP9 que graba Safari iOS 18.4+ no se decodifica en Chrome de escritorio (`PIPELINE_ERROR_DECODE`). Nuevo orden: mp4/avc1, mp4, webm/vp8, webm, webm/vp9
+- Config `video_mime_types` (y opción `videoMimeTypes` del widget) para fijar el orden de preferencia
+
 ## v1.2.0 — 2026-10-28
 - La foto de evidencia la elige el servidor entre los frames analizados (más frontal, ojos abiertos, boca cerrada, cara completa y nítida) en lugar de usar el snapshot del cliente. Config `photo_source` (`frame` por defecto, `client` para el comportamiento anterior)
 - `verify_liveness.py` devuelve `photo_frame` y `photo_metrics`; hay que volver a publicarlo (`--tag=liveness-python --force`). Con un script anterior se usa el snapshot del cliente

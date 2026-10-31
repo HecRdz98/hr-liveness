@@ -18,6 +18,9 @@ return [
     'video_max_size'        => 4000000,   // bytes del video ya decodificado (~4 MB)
     'video_max_duration_ms' => 8000,      // el widget corta la grabación al llegar a este límite
     'video_bitrate'         => 500000,    // bits/s pedidos a MediaRecorder (≈250 KB por 4 s)
+    // Orden de preferencia de formato. MP4/H.264 primero: se reproduce en todos lados
+    // (el VP9 que graba Safari iOS no se decodifica en Chrome de escritorio).
+    'video_mime_types'      => ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp8', 'video/webm', 'video/webm;codecs=vp9'],
     'videos_disk'           => null,      // null = usa photos_disk
     'videos_path'           => 'liveness/videos',
     'log_channel'    => env('LIVENESS_LOG_CHANNEL', 'stack'),

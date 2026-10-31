@@ -72,6 +72,9 @@
         videoMaxDurationMs: {{ (int) config('liveness.video_max_duration_ms', 8000) }},
         videoMaxBytes:      {{ (int) config('liveness.video_max_size', 4000000) }},
         videoBitsPerSecond: {{ (int) config('liveness.video_bitrate', 500000) }},
+        @if(config('liveness.video_mime_types'))
+        videoMimeTypes:     @json(array_values(config('liveness.video_mime_types'))),
+        @endif
         challenges:         @json($_lvChallenges),
         theme:              theme,
         texts:              @json($texts),

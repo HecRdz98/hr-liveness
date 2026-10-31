@@ -255,7 +255,7 @@ La respuesta incluye `photo_source` (`frame`|`client`), `photo_frame` (índice) 
 
 Apagado por defecto. Se activa con `LIVENESS_RECORD_VIDEO=true` (o `'record_video' => true`).
 
-- El widget graba con `MediaRecorder` mientras dura el reto (webm en Chrome/Firefox/Android, mp4 en Safari/iOS), sin audio, y lo envía junto con los frames.
+- El widget graba con `MediaRecorder` mientras dura el reto, sin audio, y lo envía junto con los frames. Prefiere MP4/H.264 (se reproduce en cualquier navegador) y cae a webm/VP8 si no está disponible; el orden se cambia con `video_mime_types`. VP9 queda al final porque el que graba Safari iOS no se reproduce en Chrome de escritorio.
 - El servidor **solo guarda el video si la prueba pasa**, en `videos_disk` (default: `photos_disk`) bajo `videos_path`. Valida tamaño (`video_max_size`) y que el contenido sea webm/mp4 real.
 - Si el navegador no soporta `MediaRecorder` o el video excede el límite, la prueba sigue funcionando sin video (`video_path: null`).
 
@@ -318,6 +318,7 @@ return [
     'video_max_size'        => 4000000,  // bytes
     'video_max_duration_ms' => 8000,
     'video_bitrate'         => 500000,   // bits/s
+    'video_mime_types'      => ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp8', 'video/webm', 'video/webm;codecs=vp9'],
     'videos_disk'           => null,     // null = photos_disk
     'videos_path'           => 'liveness/videos',
     'log_channel'       => env('LIVENESS_LOG_CHANNEL', 'stack'),
